@@ -6,7 +6,6 @@ require_once __DIR__ . '/src/helper.php';
 
 $user = currentUser();
 $products = getAllProducts();
-
 if (isset($_POST['add_to_cart'])) {
     $productId = $_GET['id'];
     $title = $_POST['title'];
@@ -15,6 +14,7 @@ if (isset($_POST['add_to_cart'])) {
 
     addToCart($productId, $title, $price, $avatar);
 }
+
 
 
 

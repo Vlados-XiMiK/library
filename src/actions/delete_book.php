@@ -13,12 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             $stmt->execute($params);
-            redirect('../../components/admin/add_book/content.php');  // Перенаправление после успешного "удаления"
+            redirect('../../components/admin/add_book/content.php');
         } catch (\Exception $exception) {
             die($exception->getMessage());
         }
     }
 }
 
-// В случае ошибки или неправильного запроса
-redirect('/path/to/error');
+// Якщо помилка
+redirect('/../../404.php');

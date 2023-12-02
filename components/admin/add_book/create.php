@@ -111,13 +111,7 @@ include_once __DIR__ . '/../header.php'
                                 <?php endif; ?>
 
 
-                                <div class="selectbox">
-                                    <select class="form-select" id="category" name="category_id" required>
 
-                                        <option>Оберіть категорію</option>
-
-                                    </select>
-                                </div>
 
 
                                 <div class="inputimagebox">

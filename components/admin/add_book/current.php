@@ -102,13 +102,7 @@ $product = currentProduct($bookId);
 
 
 
-                                <div class="selectbox">
-                                    <select class="form-select" id="category" name="category_id" required disabled>
 
-                                        <option>Оберіть категорію</option>
-
-                                    </select>
-                                </div>
                                 <div class="inputimagebox" style="text-align: center;">
                                     <img style="max-width: 250px; max-height: 300px; margin: auto; display: block;" src="../../../<?php echo $product['avatar']; ?>" alt="">
                                 </div>

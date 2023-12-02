@@ -50,7 +50,7 @@ $orders = getUserOrders($userId);
                                                 <td data-th="Ціна">₴<?= $order['total_price']; ?></td>
                                                 <td data-th="Дата"><?= $order['created_at']; ?></td>
                                                 <td data-th="Завантаження">
-                                                    <a href="/<?= $order['book_file']; ?>" download>Завантажити</a>
+                                                    <a style="color: white" href="/<?= $order['book_file']; ?>" download>Завантажити</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

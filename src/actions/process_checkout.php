@@ -8,18 +8,18 @@ if (!isset($_SESSION['cart'])) {
 
 checkAuth();
 
-// Проверка, была ли отправлена форма оформления заказа
+// Перевірка, чи була відправлена форма оформлення замовлення
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_name'], $_POST['customer_email'], $_POST['customer_phone'])) {
-    // Очистка предыдущих значений сессии
+    // Очистка попередніх значень сесії
     clearValidation();
 
-    // Получение данных из формы оформления заказа
+    // Отримання даних з форми оформлення замовлення
     $customerName = $_POST['customer_name'];
     $customerEmail = $_POST['customer_email'];
     $customerPhone = $_POST['customer_phone'];
-    $paymentMethod = $_POST['payment_method'];  // Вы можете использовать эту информацию при необходимости
+    $paymentMethod = $_POST['payment_method'];
 
-    // Валидация данных
+    // Валідація даних
     if (empty($customerName)) {
         addValidationError('customer_name', 'Поле "Ім\'я" не може бути порожнім');
     }
@@ -32,47 +32,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_name'], $_PO
         addValidationError('customer_phone', 'Поле "Номер телефону" не може бути порожнім');
     }
 
-    // Проверка наличия ошибок валидации
+    // Перевірка наявності помилок валідації
     if (hasValidationError('customer_name') || hasValidationError('customer_email') || hasValidationError('customer_phone')) {
-        // Возвращение на страницу оформления заказа с сообщениями об ошибках
+        // Повернення на сторінку оформлення замовлення з повідомленнями про помилки
         redirect('/checkout.php');
     }
 
-    // Дополнительные проверки или обработка данных заказа, если необходимо
+    // Додаткові перевірки або обробка даних замовлення, якщо необхідно
 
-    // Оформление заказа (используем ваши функции)
+    // Оформлення замовлення (використовуємо ваші функції)
     $user = currentUser();
     $userId = $user['id'];
     $cartItems = $_SESSION['cart'];
 
-    foreach ($cartItems as $cartItem) {
-        $productId = $cartItem['id'];
-        $totalPrice = $cartItem['price'] * $cartItem['quantity'];
-        $purchaseDate = date('Y-m-d H:i:s');
+    // Отримання даних з форми оформлення замовлення
+    $customerName = $_POST['customer_name'];
+    $customerEmail = $_POST['customer_email'];
+    $customerPhone = $_POST['customer_phone'];
 
-        // Добавление информации о покупке в базу данных
-        try {
-            $pdo = getPDO();
+    // Вставка інформації про клієнта та продукти в таблицю Orders
+    try {
+        $pdo = getPDO();
+        $pdo->beginTransaction(); // Починаємо транзакцію
 
-            // Ваши дополнительные действия по обработке данных о продукте
+        // Вставка інформації про клієнта в таблицю Orders
+        $stmtCustomer = $pdo->prepare("INSERT INTO Orders (user_id, customer_name, customer_email, customer_phone) VALUES (?, ?, ?, ?)");
+        $stmtCustomer->execute([$userId, $customerName, $customerEmail, $customerPhone]);
 
-            // Вставка информации о продукте в таблицу Orders
-            $stmt = $pdo->prepare("INSERT INTO Orders (user_id, product_id, total_price, created_at) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$userId, $productId, $totalPrice, $purchaseDate]);
-        } catch (\PDOException $e) {
-            echo "Error: " . $e->getMessage();
+        // Отримання останнього вставленого ID (ID замовлення)
+        $orderId = $pdo->lastInsertId();
+
+        // Вставка інформації про продукти в таблицю Orders
+        foreach ($cartItems as $cartItem) {
+            $productId = $cartItem['id'];
+            $totalPrice = $cartItem['price'] * $cartItem['quantity'];
+            $purchaseDate = date('Y-m-d H:i:s');
+
+            // Додавання інформації про покупку в базу даних
+            $stmtProduct = $pdo->prepare("INSERT INTO Orders (user_id, product_id, customer_name, customer_email, customer_phone, total_price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmtProduct->execute([$userId, $productId, $customerName, $customerEmail, $customerPhone, $totalPrice, $purchaseDate]);
         }
+
+        $pdo->commit(); // Фіксуємо транзакцію
+    } catch (\PDOException $e) {
+        $pdo->rollBack(); // Відкатуємо транзакцію в разі помилки
+        echo "Помилка: " . $e->getMessage();
     }
 
-    // Очистка корзины после успешного оформления заказа
+    // Очищення кошика після успішного оформлення замовлення
     unset($_SESSION['cart']);
 
-    // Редирект на страницу с сообщением об успешном оформлении заказа
+    // Редірект на сторінку з повідомленням про успішне оформлення замовлення
     setMessage('success', 'Ваше замовлення успішно оформлено!');
     redirect('/../../components/user/my_orders.php');
 } else {
-    // Если запрос не является POST-запросом или отсутствуют необходимые данные
-    // Редирект на страницу оформления заказа с сообщением об ошибке
+    // Якщо запит не є POST-запитом або відсутні необхідні дані
+    // Редірект на сторінку оформлення замовлення з повідомленням про помилку
     setMessage('error', 'Помилка при оформленні замовлення. Будь ласка, спробуйте ще раз.');
     redirect('/checkout.php');
 }

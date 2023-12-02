@@ -42,7 +42,7 @@ if (!empty($avatar['tmp_name'])) {
         }
     }
 } else {
-    // Если файл не выбран, не обрабатываем его
+    // Якщо файл не вибраний, не обробляємо його
     $avatarPath = null;
 }
 
@@ -61,12 +61,12 @@ if (!empty($book_file['tmp_name'])) {
         $bookPath = uploadFile($book_file, 'book');
 
         if ($bookPath === false) {
-            // Ошибка загрузки файла
+            // помилка при завантаженні
             die('Помилка при завантаженні файлу на сервер');
         }
     }
 } else {
-    // Если файл не выбран, не обрабатываем его
+    // Якщо файл не вибраний, не обробляємо його
     $bookPath = null;
 }
 
@@ -83,7 +83,7 @@ $product = currentProduct($bookId);
 
 $pdo = getPDO();
 if ($product) {
-    // Используем условие, чтобы обновлять avatar только в случае, если он выбран
+    // Використовуємо умову, щоб оновлювати avatar тільки у випадку, якщо він вибраний
     $updateFields = [
         'title' => $title,
         'content' => $content,
@@ -98,7 +98,7 @@ if ($product) {
         $updateFields['book_file'] = $bookPath;
     }
 
-    // Подготавливаем SET часть запроса динамически
+    // Підготовляємо SET частину запиту динамічно
     $setPart = implode(', ', array_map(function ($key) {
         return "$key = :$key";
     }, array_keys($updateFields)));
@@ -114,8 +114,8 @@ if ($product) {
         die($exception->getMessage());
     }
 } else {
-    // Обработка случая, если продукт с заданным идентификатором не найден
-    echo "Продукт не найден";
+    // Обробка випадку, якщо продукт із заданим ідентифікатором не знайдено
+    echo "Продукт не знайдено";
 }
 
 redirect('/components/admin/add_book/content.php');
