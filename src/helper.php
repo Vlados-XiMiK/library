@@ -174,17 +174,22 @@ function findUser($email){
     return $stmt->fetch(\PDO::FETCH_ASSOC);
 }
 
-function currentUser()
+function currentUser($userId = null)
 {
     $pdo = getPDO();
 
-    if (!isset($_SESSION['user'])){
+    if ($userId === null) {
+        // Якщо $userId не передано, отримуємо його із сесії
+        $userId = $_SESSION['user']['id'] ?? null;
+    }
+
+    if ($userId === null) {
+        // Якщо $userId ще не встановлено, повертаємо false
         return false;
     }
-    $userId = $_SESSION['user']['id'] ?? null;
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-    $stmt->execute(['id' => $userId ]);
+    $stmt->execute(['id' => $userId]);
     return $stmt->fetch(\PDO::FETCH_ASSOC);
 }
 

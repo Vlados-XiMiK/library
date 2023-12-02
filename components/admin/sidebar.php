@@ -20,14 +20,9 @@ checkAdmin();
             <span class="text">Товари</span>
         </a>
     </li>
+
     <li>
-        <a href="">
-            <i class='bx bxs-doughnut-chart' ></i>
-            <span class="text">Розділ "Новини"</span>
-        </a>
-    </li>
-    <li>
-        <a href="">
+        <a href="/components/admin/users/content.php">
             <i class='bx bxs-group' ></i>
             <span class="text">Користувачі</span>
         </a>
